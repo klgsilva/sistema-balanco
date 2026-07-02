@@ -40,14 +40,17 @@
     {% if selected_usuario %}
     {% set usuario = selected_usuario %}
     {% set admin_principal = usuario.email == "admin@inventario.local" %}
-    <form method="post" action="{{ url_for('admin.editar_usuario', usuario_id=usuario.id) }}" class="user-card" data-restore-scroll>
+    <form method="post" action="{{ url_for('admin.editar_usuario', usuario_id=usuario.id) }}" class="user-card" data-restore-scroll data-dirty-form>
         <div class="user-card-header">
             <div>
                 <strong>{{ usuario.nome }}</strong>
                 <span>{{ usuario.email }}</span>
                 {% if admin_principal %}<small class="field-note">Login administrador principal</small>{% endif %}
+                {% if request.args.get('salvo') == usuario.id|string %}
+                <small class="save-feedback">Alteracoes salvas com sucesso.</small>
+                {% endif %}
             </div>
-            <button class="small secondary" type="submit">Salvar</button>
+            <button class="small secondary" type="submit" data-dirty-submit disabled>Salvar</button>
         </div>
         <div class="user-card-grid">
             <label>Nome <input name="nome" value="{{ usuario.nome }}" required></label>
