@@ -183,8 +183,15 @@ button, .button {
     padding: 10px 14px;
 }
 button:hover, .button:hover { background: var(--primary-dark); color: #fff; }
+button:disabled, .button:disabled {
+    background: #eef2f7;
+    border-color: #d8e1ef;
+    color: #8a97ad;
+    cursor: not-allowed;
+}
 .secondary { background: #fff; border-color: var(--line); color: var(--text); }
 .secondary:hover { background: #eef3fb; color: var(--text); }
+.secondary:disabled { background: #f4f6fa; color: #8a97ad; }
 .danger { background: var(--danger); border-color: var(--danger); color: #fff; }
 .small { min-height: 34px; padding: 7px 10px; }
 .form-actions, .table-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -229,6 +236,16 @@ button:hover, .button:hover { background: var(--primary-dark); color: #fff; }
 .user-card-header span {
     color: var(--muted);
     font-size: 13px;
+}
+.save-feedback {
+    background: #e8f7ef;
+    border-radius: 8px;
+    color: var(--success);
+    display: inline-flex;
+    font-weight: 800;
+    margin-top: 8px;
+    padding: 7px 10px;
+    width: fit-content;
 }
 .user-card-grid {
     display: grid;
