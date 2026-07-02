@@ -1,0 +1,99 @@
+{% macro nav_icon(name) -%}
+<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+    {% if name == "painel" %}<path d="M4 11.5 12 5l8 6.5"></path><path d="M6.5 10.5V19h11v-8.5"></path><path d="M10 19v-5h4v5"></path>
+    {% elif name == "lancamento" %}<path d="M8 4h8"></path><path d="M9 3.5h6v3H9z"></path><path d="M6 5.5h12V20H6z"></path><path d="m9 13 2 2 4-5"></path>
+    {% elif name == "produtos" %}<path d="M4 7h16"></path><path d="M6 7v13h12V7"></path><path d="M9 11h6"></path><path d="M9 15h4"></path>
+    {% elif name == "relatorios" %}<path d="M5 19V5"></path><path d="M5 19h14"></path><path d="M9 16v-5"></path><path d="M13 16V8"></path><path d="M17 16v-3"></path>
+    {% elif name == "lojas" %}<path d="M4 10h16"></path><path d="m5 10 1.5-5h11L19 10"></path><path d="M6 10v10h12V10"></path><path d="M10 20v-5h4v5"></path>
+    {% elif name == "corredores" %}<path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path>
+    {% elif name == "usuarios" %}<path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path><path d="M3.5 20c.6-3.4 2.4-5 5.5-5s4.9 1.6 5.5 5"></path><path d="M16 11a2.5 2.5 0 0 0 0-5"></path><path d="M17 15c2 .3 3.2 1.9 3.5 5"></path>
+    {% elif name == "manual" %}<path d="M6 4h9l3 3v13H6z"></path><path d="M15 4v4h4"></path><path d="M9 12h6"></path><path d="M9 16h6"></path>
+    {% elif name == "sair" %}<path d="M10 5H5v14h5"></path><path d="M14 8l4 4-4 4"></path><path d="M8 12h10"></path>{% endif %}
+</svg>
+{%- endmacro %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Inventario{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="menu-backdrop" data-menu-backdrop></div>
+    <div class="app-shell" data-app-shell>
+        <aside class="sidebar" data-menu>
+            <button class="sidebar-collapse" type="button" data-sidebar-collapse aria-label="Recolher menu">&#8249;</button>
+            <a class="brand sidebar-brand" href="{{ url_for('main.dashboard') }}">
+                <span class="brand-greeting">Inventario</span>
+                <span>{{ current_user.nome }}</span>
+                {% if current_user.loja and not current_user.pode_ver_todas_lojas %}
+                <span class="brand-greeting">{{ current_user.loja.codigo }} - {{ current_user.loja.nome }}</span>
+                {% elif current_user.pode_ver_todas_lojas %}
+                <span class="brand-greeting">Todas as lojas</span>
+                {% endif %}
+            </a>
+            <nav class="nav">
+                <div class="nav-group">
+                    <span>Operacao</span>
+                    {% if current_user.can_access("painel") %}
+                    <a class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}" title="Painel">{{ nav_icon("painel") }}<span class="nav-text">Painel</span></a>
+                    {% endif %}
+                    {% if current_user.can_access("lancamento") %}
+                    <a class="{% if request.endpoint == 'main.lancamento' %}active{% endif %}" href="{{ url_for('main.lancamento') }}" title="Lancamento">{{ nav_icon("lancamento") }}<span class="nav-text">Lancamento</span></a>
+                    {% endif %}
+                    {% if current_user.can_access("produtos") %}
+                    <a class="{% if request.endpoint == 'main.produtos' %}active{% endif %}" href="{{ url_for('main.produtos') }}" title="Produtos">{{ nav_icon("produtos") }}<span class="nav-text">Produtos</span></a>
+                    {% endif %}
+                </div>
+                {% if current_user.can_access("relatorios") %}
+                <div class="nav-group">
+                    <span>Gestao</span>
+                    <a class="{% if request.endpoint == 'main.relatorios' %}active{% endif %}" href="{{ url_for('main.relatorios') }}" title="Relatorios">{{ nav_icon("relatorios") }}<span class="nav-text">Relatorios</span></a>
+                </div>
+                {% endif %}
+                {% if current_user.can_access("lojas") or current_user.can_access("corredores") or current_user.can_access("usuarios") %}
+                <div class="nav-group">
+                    <span>Cadastros</span>
+                    {% if current_user.can_access("lojas") %}
+                    <a class="{% if request.endpoint == 'admin.lojas' %}active{% endif %}" href="{{ url_for('admin.lojas') }}" title="Lojas">{{ nav_icon("lojas") }}<span class="nav-text">Lojas</span></a>
+                    {% endif %}
+                    {% if current_user.can_access("corredores") %}
+                    <a class="{% if request.endpoint == 'admin.corredores' %}active{% endif %}" href="{{ url_for('admin.corredores') }}" title="Corredores">{{ nav_icon("corredores") }}<span class="nav-text">Corredores</span></a>
+                    {% endif %}
+                    {% if current_user.can_access("usuarios") %}
+                    <a class="{% if request.endpoint == 'admin.usuarios' %}active{% endif %}" href="{{ url_for('admin.usuarios') }}" title="Usuarios">{{ nav_icon("usuarios") }}<span class="nav-text">Usuarios</span></a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div class="nav-group">
+                    <span>Sessao</span>
+                    <a class="{% if request.endpoint == 'main.manual' %}active{% endif %}" href="{{ url_for('main.manual') }}" title="Manual">{{ nav_icon("manual") }}<span class="nav-text">Manual</span></a>
+                    <a href="{{ url_for('auth.logout') }}" title="Sair">{{ nav_icon("sair") }}<span class="nav-text">Sair</span></a>
+                </div>
+            </nav>
+        </aside>
+        <main class="container">
+    {% else %}
+        <main class="container">
+    {% endif %}
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+            <div class="messages">
+                {% for categoria, mensagem in mensagens %}
+                <div class="message {{ categoria }}">{{ mensagem }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        </main>
+    {% if current_user.is_authenticated %}</div>{% endif %}
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

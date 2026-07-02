@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Lojas - Inventario{% endblock %}
+{% block content %}
+<div class="page-header"><div><span class="eyebrow">Cadastros</span><h1>Lojas</h1></div></div>
+<form method="post" class="form-card compact-form" data-restore-scroll>
+    <label>Codigo <input name="codigo" placeholder="L01" required></label>
+    <label>Nome <input name="nome" placeholder="Loja 01" required></label>
+    <button type="submit">Cadastrar</button>
+</form>
+<section>
+    <table class="mobile-card-table">
+        <thead><tr><th>Codigo</th><th>Nome</th><th>Status</th><th>Acoes</th></tr></thead>
+        <tbody>
+            {% for loja in lojas %}
+            <tr>
+                <form method="post" action="{{ url_for('admin.editar_loja', loja_id=loja.id) }}" data-restore-scroll>
+                    <td data-label="Codigo"><input name="codigo" value="{{ loja.codigo }}" required></td>
+                    <td data-label="Nome"><input name="nome" value="{{ loja.nome }}" required></td>
+                    <td data-label="Status"><label class="check"><input type="checkbox" name="ativa" {% if loja.ativa %}checked{% endif %}> Ativa</label></td>
+                    <td data-label="Acoes"><button class="small secondary" type="submit">Salvar</button></td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

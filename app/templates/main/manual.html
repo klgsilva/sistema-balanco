@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Manual de uso - Inventario{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <span class="eyebrow">Ajuda</span>
+        <h1>Manual de uso</h1>
+    </div>
+</div>
+
+<section class="manual-hero">
+    <strong>Sistema de Inventario</strong>
+    <span>Manual operacional para lancamento, conferencia e relatorios do balanco.</span>
+    <small>Desenvolvedor: Ricardo Klinger</small>
+</section>
+
+<section class="manual-section">
+    <h2>1. Acesso ao sistema</h2>
+    <ol>
+        <li>Abra o endereco do sistema no computador ou celular.</li>
+        <li>Informe e-mail e senha do usuario.</li>
+        <li>Depois do login, o menu mostra apenas as telas liberadas para o seu usuario.</li>
+        <li>Usuarios vinculados a uma loja trabalham somente naquela loja. Usuarios com visao geral precisam escolher a loja nas telas.</li>
+    </ol>
+</section>
+
+<section class="manual-section">
+    <h2>2. Novo lancamento</h2>
+    <ol>
+        <li>Entre em <strong>Lancamento</strong>.</li>
+        <li>Se o usuario tiver acesso a todas as lojas, escolha a loja antes de continuar.</li>
+        <li>Escolha o corredor. Para deposito, selecione <strong>Deposito - sem corredor</strong>.</li>
+        <li>Depois de escolher o corredor ou deposito, os campos do produto aparecem.</li>
+        <li>Leia o codigo com a camera ou digite manualmente. O sistema trabalha com codigo de barras de 13 digitos.</li>
+        <li>Preencha nome do produto, origem, margem, preco de venda, tipo e quantidade.</li>
+        <li>Confira o custo calculado e o custo total do lancamento.</li>
+        <li>Clique em <strong>Salvar produto</strong>.</li>
+    </ol>
+    <p>Ao salvar, o sistema permanece no mesmo corredor ou deposito para facilitar varios lancamentos seguidos.</p>
+</section>
+
+<section class="manual-section">
+    <h2>3. Regras de loja, corredor e deposito</h2>
+    <ol>
+        <li>Na loja, o produto precisa estar em um corredor.</li>
+        <li>No deposito, nao existe corredor. O deposito e tratado como local unico.</li>
+        <li>Na loja, o mesmo codigo de barras nao pode aparecer em outro corredor da mesma loja.</li>
+        <li>O mesmo produto pode existir na loja e tambem no deposito, porque sao locais diferentes.</li>
+        <li>Na loja, os tipos permitidos sao Unidade e Kg.</li>
+        <li>No deposito, os tipos permitidos sao Caixa e Fardo.</li>
+    </ol>
+</section>
+
+<section class="manual-section">
+    <h2>4. Produtos</h2>
+    <ol>
+        <li>Entre em <strong>Produtos</strong>.</li>
+        <li>Use busca, loja, local ou corredor para filtrar.</li>
+        <li>Usuarios com visao de todas as lojas precisam escolher uma loja ou informar uma busca antes de carregar produtos.</li>
+        <li>Ao filtrar, a tela mostra os totais de unidade, peso, caixas, fardos e custo.</li>
+        <li>Edicao e exclusao aparecem somente para usuarios com permissao.</li>
+    </ol>
+</section>
+
+<section class="manual-section">
+    <h2>5. Relatorios</h2>
+    <ol>
+        <li>Entre em <strong>Relatorios</strong>.</li>
+        <li>Escolha a loja para consultar o relatorio.</li>
+        <li>Filtre por local e corredor quando precisar separar a conferencia.</li>
+        <li>O CSV fica disponivel quando ha resultado filtrado.</li>
+        <li>A previa em PDF aparece quando houver loja e corredor escolhidos, ou loja e deposito selecionados.</li>
+        <li>O PDF e aberto em uma nova aba para conferencia antes de baixar.</li>
+    </ol>
+    <p>O PDF usa o modelo do balanco: descricao, barras, custo unitario, quantidade e total.</p>
+</section>
+
+<section class="manual-section">
+    <h2>6. Cadastros</h2>
+    <ol>
+        <li><strong>Lojas:</strong> mantenha os codigos em ordem L01 ate L12 e os nomes corretos.</li>
+        <li><strong>Corredores:</strong> cadastre e ative apenas corredores usados no balanco.</li>
+        <li><strong>Usuarios:</strong> cadastre nome, e-mail, senha e loja do usuario.</li>
+        <li>Depois de salvar o usuario, escolha o usuario no modulo de permissoes e marque o que ele pode acessar.</li>
+        <li>O login administrador principal nao deve ser inativado.</li>
+    </ol>
+</section>
+
+<section class="manual-section">
+    <h2>7. Permissoes</h2>
+    <ol>
+        <li><strong>Operador:</strong> normalmente acessa painel, lancamento e produtos.</li>
+        <li><strong>Supervisor ou gestor:</strong> pode receber relatorios e exportacoes.</li>
+        <li><strong>Cadastros:</strong> devem ficar com administradores ou responsaveis definidos.</li>
+        <li>Permissao de excluir produto deve ser liberada com cuidado.</li>
+    </ol>
+</section>
+
+<section class="manual-section">
+    <h2>8. Uso no celular e camera</h2>
+    <ol>
+        <li>Acesse o sistema pelo endereco HTTPS informado no computador servidor.</li>
+        <li>Escolha loja e corredor antes de abrir a camera no lancamento.</li>
+        <li>Aponte a camera para o codigo completo, mantendo as barras dentro do quadro.</li>
+        <li>Se a leitura falhar, aproxime, melhore a luz ou digite o codigo manualmente.</li>
+        <li>O codigo aceito deve ter exatamente 13 digitos.</li>
+    </ol>
+</section>
+
+<section class="manual-section">
+    <h2>9. Deploy e manutencao</h2>
+    <ol>
+        <li>Para subir no Railway, envie para o GitHub os arquivos do projeto, sem a pasta <strong>.venv</strong> e sem o banco local.</li>
+        <li>No Railway, use PostgreSQL e configure as variaveis SECRET_KEY e TIMEZONE.</li>
+        <li>O comando de inicio prepara o banco e inicia o servidor automaticamente.</li>
+        <li>Antes de alterar regras de balanco, teste localmente e gere uma previa do PDF.</li>
+    </ol>
+</section>
+{% endblock %}

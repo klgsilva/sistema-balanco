@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Painel - Inventario{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <span class="eyebrow">Painel</span>
+        <h1>Resumo do inventario</h1>
+    </div>
+    <a class="button" href="{{ url_for('main.lancamento') }}">Novo lancamento</a>
+</div>
+
+<section class="stats-grid">
+    <div class="stat-card"><span>Itens lancados</span><strong>{{ totais.itens }}</strong></div>
+    <div class="stat-card"><span>Na loja</span><strong>{{ por_local.store }}</strong></div>
+    <div class="stat-card"><span>No deposito</span><strong>{{ por_local.warehouse }}</strong></div>
+    <div class="stat-card"><span>Total venda</span><strong>{{ totais.venda|brl }}</strong></div>
+</section>
+
+<section>
+    <div class="section-title">
+        <h2>Ultimos lancamentos</h2>
+        <a href="{{ url_for('main.produtos') }}">Ver todos</a>
+    </div>
+    <table class="mobile-card-table">
+        <thead><tr><th>Produto</th><th>Local</th><th>Qtd</th><th>Venda</th><th>Quando</th></tr></thead>
+        <tbody>
+            {% for item in recentes %}
+            <tr>
+                <td data-label="Produto">{{ item.nome }}</td>
+                <td data-label="Local">{{ item.local_label }}{% if item.corredor %} - {{ item.corredor.nome }}{% endif %}</td>
+                <td data-label="Qtd">{{ item.quantidade|qty }} {{ item.medida_label }}</td>
+                <td data-label="Venda">{{ item.total_venda|brl }}</td>
+                <td data-label="Quando">{{ item.criado_em|datetime_local }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">Nenhum produto lancado ainda.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
+

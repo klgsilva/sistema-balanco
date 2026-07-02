@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Produtos - Inventario{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <span class="eyebrow">Produtos</span>
+        <h1>Itens inventariados</h1>
+    </div>
+    <a class="button" href="{{ url_for('main.lancamento') }}">Novo produto</a>
+</div>
+{% include "main/_filtros.html" %}
+{% if filtro_bloqueado %}
+<section>
+    <p class="empty-state">{{ mensagem_filtro_bloqueado }}</p>
+</section>
+{% elif filtro_aplicado %}
+<section class="stats-grid">
+    <div class="stat-card"><span>Itens filtrados</span><strong>{{ totais.itens }}</strong></div>
+    <div class="stat-card"><span>Unidades</span><strong>{{ totais.quantidade_unidade|qty }}</strong></div>
+    <div class="stat-card"><span>Peso</span><strong>{{ totais.peso_kg|qty }} kg</strong></div>
+    <div class="stat-card"><span>Caixas</span><strong>{{ totais.quantidade_caixa|qty }}</strong></div>
+    <div class="stat-card"><span>Fardos</span><strong>{{ totais.quantidade_fardo|qty }}</strong></div>
+    <div class="stat-card"><span>Soma custo</span><strong>{{ totais.custo|brl }}</strong></div>
+</section>
+{% include "main/_tabela_produtos.html" %}
+{% endif %}
+{% endblock %}

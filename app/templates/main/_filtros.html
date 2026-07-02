@@ -1,0 +1,33 @@
+<form method="get" class="form-card filter-form">
+    <input type="hidden" name="filtrar" value="1">
+    <label>Busca
+        <input name="busca" value="{{ request.args.get('busca', '') }}" placeholder="Codigo ou produto">
+    </label>
+    {% if current_user.pode_ver_todas_lojas %}
+    <label>Loja
+        <select name="loja_id">
+            <option value="">Todas</option>
+            {% for loja in lojas %}
+            <option value="{{ loja.id }}" {% if request.args.get('loja_id', '') == loja.id|string %}selected{% endif %}>{{ loja.codigo }} - {{ loja.nome }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    {% endif %}
+    <label>Local
+        <select name="local_estoque" data-filter-location>
+            <option value="">Todos</option>
+            {% for valor, label in locais.items() %}
+            <option value="{{ valor }}" {% if request.args.get('local_estoque') == valor %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label data-filter-corridor-field>Corredor
+        <select name="corredor_id" data-filter-corridor>
+            <option value="">Todos</option>
+            {% for corredor in corredores %}
+            <option value="{{ corredor.id }}" {% if request.args.get('corredor_id', '') == corredor.id|string %}selected{% endif %}>{{ corredor.nome }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <button type="submit">Filtrar</button>
+</form>

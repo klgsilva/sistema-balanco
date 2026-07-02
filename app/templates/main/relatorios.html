@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Relatorios - Inventario{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <span class="eyebrow">Gestao</span>
+        <h1>Relatorios</h1>
+    </div>
+    {% if exportar_disponivel %}
+    <div class="form-actions">
+    <a class="button secondary" href="{{ url_for('main.exportar_csv', **request.args) }}">CSV</a>
+        {% if pdf_disponivel %}
+        <a class="button secondary" href="{{ url_for('main.exportar_pdf', **request.args) }}" target="_blank" rel="noopener">Previa PDF</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% include "main/_filtros.html" %}
+
+{% if filtro_bloqueado %}
+<section>
+    <p class="empty-state">{{ mensagem_filtro_bloqueado }}</p>
+</section>
+{% elif filtro_aplicado %}
+{% if exportar_disponivel and not pdf_disponivel %}
+<section>
+    <p class="empty-state">{{ mensagem_pdf }}</p>
+</section>
+{% endif %}
+<section class="stats-grid">
+    <div class="stat-card"><span>Itens</span><strong>{{ totais.itens }}</strong></div>
+    <div class="stat-card"><span>Unidades</span><strong>{{ totais.quantidade_unidade|qty }}</strong></div>
+    <div class="stat-card"><span>Peso</span><strong>{{ totais.peso_kg|qty }} kg</strong></div>
+    <div class="stat-card"><span>Caixas</span><strong>{{ totais.quantidade_caixa|qty }}</strong></div>
+    <div class="stat-card"><span>Fardos</span><strong>{{ totais.quantidade_fardo|qty }}</strong></div>
+    <div class="stat-card"><span>Total custo</span><strong>{{ totais.custo|brl }}</strong></div>
+</section>
+
+<section class="report-grid">
+    {% for nome, total, itens in grupos %}
+    <article class="report-card">
+        <strong>{{ nome }}</strong>
+        <span>{{ total.itens }} produtos</span>
+        {% if total.quantidade_unidade %}
+        <span>Unidades: {{ total.quantidade_unidade|qty }}</span>
+        {% endif %}
+        {% if total.peso_kg %}
+        <span>Peso: {{ total.peso_kg|qty }} kg</span>
+        {% endif %}
+        {% if total.quantidade_caixa %}
+        <span>Caixas: {{ total.quantidade_caixa|qty }}</span>
+        {% endif %}
+        {% if total.quantidade_fardo %}
+        <span>Fardos: {{ total.quantidade_fardo|qty }}</span>
+        {% endif %}
+        <span>Custo: {{ total.custo|brl }}</span>
+        <span>Venda: {{ total.venda|brl }}</span>
+    </article>
+    {% else %}
+    <p>Nenhum item encontrado para os filtros escolhidos.</p>
+    {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

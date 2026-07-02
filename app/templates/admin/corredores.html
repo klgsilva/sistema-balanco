@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Corredores - Inventario{% endblock %}
+{% block content %}
+<div class="page-header"><div><span class="eyebrow">Cadastros</span><h1>Corredores</h1></div></div>
+<form method="post" class="form-card compact-form" data-restore-scroll>
+    <label>Novo corredor <input name="nome" required></label>
+    <button type="submit">Cadastrar</button>
+</form>
+<section>
+    <table class="mobile-card-table">
+        <thead><tr><th>Nome</th><th>Status</th><th>Acoes</th></tr></thead>
+        <tbody>
+            {% for corredor in corredores %}
+            <tr>
+                <form method="post" action="{{ url_for('admin.editar_corredor', corredor_id=corredor.id) }}" data-restore-scroll>
+                    <td data-label="Nome"><input name="nome" value="{{ corredor.nome }}" required></td>
+                    <td data-label="Status"><label class="check"><input type="checkbox" name="ativo" {% if corredor.ativo %}checked{% endif %}> Ativo</label></td>
+                    <td data-label="Acoes"><button class="small secondary" type="submit">Salvar</button></td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

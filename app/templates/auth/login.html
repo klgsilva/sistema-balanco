@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Entrar - Inventario{% endblock %}
+{% block content %}
+<section class="auth-box login-box">
+    <div class="login-brand">
+        <strong>Sistema de Inventario</strong>
+        <span>Loja, deposito, corredores e relatorios</span>
+    </div>
+    <form method="post" class="form-card">
+        <label>E-mail
+            <input type="email" name="email" required autofocus>
+        </label>
+        <label>Senha
+            <input type="password" name="senha" required>
+        </label>
+        <button type="submit">Entrar</button>
+    </form>
+    <p class="developer-credit">by: Ricardo Klinger</p>
+</section>
+{% endblock %}
+

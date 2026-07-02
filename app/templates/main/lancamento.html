@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Lancamento - Inventario{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <span class="eyebrow">Operacao</span>
+        <h1>{% if produto %}Editar produto{% else %}Novo lancamento{% endif %}</h1>
+    </div>
+    <button class="button secondary" type="button" data-scan-barcode data-product-action hidden>Usar camera</button>
+    <input type="file" accept="image/*" capture="environment" data-scan-file hidden>
+</div>
+
+<section class="scanner" data-scanner hidden>
+    <div id="barcode-live-reader" class="barcode-live-reader" data-html5-reader></div>
+    <video data-scanner-video playsinline></video>
+    <div class="scanner-actions">
+        <span data-scanner-status>Aponte a camera para o codigo de barras.</span>
+        <button type="button" class="secondary" data-stop-scan>Parar</button>
+    </div>
+</section>
+
+<form method="post" class="form-card inventory-form">
+    {% if produto %}<input type="hidden" name="produto_id" value="{{ produto.id }}">{% endif %}
+    {% if current_user.pode_ver_todas_lojas %}
+    <label class="launch-first-step">Loja
+        <select name="loja_id" data-launch-store data-launch-url="{{ url_for('main.lancamento') }}">
+            <option value="" {% if not selected_loja %}selected{% endif %}>Escolha a loja para comecar</option>
+            {% for loja in lojas %}
+            <option value="{{ loja.id }}" {% if selected_loja and selected_loja.id == loja.id %}selected{% endif %}>{{ loja.codigo }} - {{ loja.nome }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    {% elif selected_loja %}
+    <input type="hidden" name="loja_id" value="{{ selected_loja.id }}">
+    {% endif %}
+    <label class="launch-first-step">Corredor
+        <select name="corredor_id" data-launch-corridor required {% if current_user.pode_ver_todas_lojas and not selected_loja %}disabled{% endif %}>
+            <option value="">Escolha o corredor para comecar</option>
+            {% for corredor in corredores %}
+            {% set bucket = bucket_totals.get(corredor.id|string) %}
+            <option
+                value="{{ corredor.id }}"
+                data-saved-cost="{{ '%.2f'|format(bucket.custo if bucket else 0) }}"
+                data-saved-items="{{ bucket.itens if bucket else 0 }}"
+                {% if selected_corredor_id == corredor.id %}selected{% endif %}
+            >{{ corredor.nome }}</option>
+            {% endfor %}
+            {% set warehouse_bucket = bucket_totals.get("__warehouse__") %}
+            <option
+                value="__warehouse__"
+                data-saved-cost="{{ '%.2f'|format(warehouse_bucket.custo if warehouse_bucket else 0) }}"
+                data-saved-items="{{ warehouse_bucket.itens if warehouse_bucket else 0 }}"
+                {% if selected_bucket == "warehouse" %}selected{% endif %}
+            >Deposito - sem corredor</option>
+        </select>
+    </label>
+    <div class="corridor-total-panel" data-corridor-total-panel hidden>
+        <div>
+            <span>Valor total de custo</span>
+            <strong data-corridor-preview-cost>R$ 0,00</strong>
+            <small><span data-corridor-saved-items>0</span> produtos adicionados neste corredor</small>
+        </div>
+    </div>
+    <div class="form-grid" data-product-fields hidden>
+        <input type="hidden" name="local_estoque" data-stock-location value="{{ 'warehouse' if selected_bucket == 'warehouse' else 'store' }}">
+        <label>Codigo de barras
+            <input name="codigo_barras" data-barcode-input inputmode="numeric" autocomplete="off" maxlength="13" pattern="[0-9]{13}" value="{{ produto.codigo_barras if produto else '' }}" required>
+        </label>
+        <label>Produto
+            <input name="nome" value="{{ produto.nome if produto else '' }}" required>
+        </label>
+        <label>Origem
+            <select name="origem" data-origin>
+                {% for valor, label in origens.items() %}
+                <option value="{{ valor }}" {% if produto and produto.origem == valor %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Margem %
+            <input name="margem" data-margin type="number" step="0.01" value="{{ produto.margem if produto else '20' }}" required>
+        </label>
+        <label>Preco de venda
+            <input name="preco_venda" data-sale-price inputmode="decimal" value="{{ produto.preco_venda if produto else '' }}" required>
+        </label>
+        <label>Custo calculado
+            <input data-cost-preview value="{{ produto.preco_custo if produto else '' }}" readonly>
+        </label>
+        <label><span data-measure-title>Tipo</span>
+            <select name="tipo_medida" data-measure-type>
+                {% for valor, label in medidas.items() %}
+                <option
+                    value="{{ valor }}"
+                    data-measure-context="{{ 'warehouse' if valor in ['box', 'bundle'] else 'store' }}"
+                    {% if produto and produto.tipo_medida == valor %}selected{% endif %}
+                >{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label><span data-quantity-title>Quantidade / peso</span>
+            <input name="quantidade" data-quantity inputmode="decimal" value="{{ produto.quantidade if produto else '1' }}" required>
+        </label>
+        <div class="launch-total-card">
+            <span>Total deste lancamento</span>
+            <strong data-line-sale-total>{{ produto.total_venda|brl if produto else 'R$ 0,00' }}</strong>
+            <small>Venda total do produto</small>
+        </div>
+        <div class="launch-total-card secondary-total">
+            <span>Custo total</span>
+            <strong data-line-cost-total>{{ produto.total_custo|brl if produto else 'R$ 0,00' }}</strong>
+            <small>Soma do custo calculado</small>
+        </div>
+    </div>
+    <div class="form-actions" data-product-action hidden>
+        <button type="submit">Salvar produto</button>
+        {% if produto %}<a class="button secondary" href="{{ url_for('main.lancamento') }}">Cancelar edicao</a>{% endif %}
+    </div>
+</form>
+{% endblock %}

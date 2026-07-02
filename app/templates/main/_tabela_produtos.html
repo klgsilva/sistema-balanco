@@ -1,0 +1,35 @@
+<section>
+    <table class="mobile-card-table">
+        <thead>
+            {% set pode_acoes = current_user.can_access("editar_produto") or current_user.can_access("excluir_produto") %}
+            <tr><th>Codigo</th><th>Produto</th>{% if current_user.pode_ver_todas_lojas %}<th>Loja</th>{% endif %}<th>Local</th><th>Qtd</th><th>Total venda</th><th>Total custo</th>{% if pode_acoes %}<th>Acoes</th>{% endif %}</tr>
+        </thead>
+        <tbody>
+            {% for item in produtos %}
+            <tr>
+                <td data-label="Codigo">{{ item.codigo_barras }}</td>
+                <td data-label="Produto">{{ item.nome }}</td>
+                {% if current_user.pode_ver_todas_lojas %}<td data-label="Loja">{{ item.loja.codigo if item.loja else "-" }} - {{ item.loja.nome if item.loja else "Sem loja" }}</td>{% endif %}
+                <td data-label="Local">{{ item.local_label }}{% if item.corredor %} - {{ item.corredor.nome }}{% endif %}</td>
+                <td data-label="Qtd">{{ item.quantidade|qty }} {{ item.medida_label }}</td>
+                <td data-label="Total venda">{{ item.total_venda|brl }}</td>
+                <td data-label="Total custo">{{ item.total_custo|brl }}</td>
+                {% if pode_acoes %}
+                <td data-label="Acoes" class="table-actions">
+                    {% if current_user.can_access("editar_produto") %}
+                    <a class="button small secondary" href="{{ url_for('main.lancamento', editar=item.id) }}">Editar</a>
+                    {% endif %}
+                    {% if current_user.can_access("excluir_produto") %}
+                    <form method="post" action="{{ url_for('main.excluir_produto', produto_id=item.id) }}" onsubmit="return confirm('Remover este produto?');">
+                        <button class="small danger" type="submit">Remover</button>
+                    </form>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr><td colspan="{% if current_user.pode_ver_todas_lojas and pode_acoes %}8{% elif current_user.pode_ver_todas_lojas or pode_acoes %}7{% else %}6{% endif %}">Nenhum produto encontrado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>

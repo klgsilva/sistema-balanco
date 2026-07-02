@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Usuarios - Inventario{% endblock %}
+{% block content %}
+<div class="page-header"><div><span class="eyebrow">Cadastros</span><h1>Usuarios</h1></div></div>
+
+<form method="post" class="form-card" data-restore-scroll>
+    <div class="form-grid">
+        <label>Nome <input name="nome" required></label>
+        <label>E-mail <input type="email" name="email" required></label>
+        <label>Senha <input type="password" name="senha" required></label>
+        <label>Loja
+            <select name="loja_id">
+                <option value="">Escolha a loja</option>
+                {% for loja in lojas %}
+                <option value="{{ loja.id }}">{{ loja.codigo }} - {{ loja.nome }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </div>
+    <div class="form-actions"><button type="submit">Cadastrar usuario</button></div>
+</form>
+
+<section class="user-list" id="permissoes">
+    <div class="section-title">
+        <div>
+            <span class="eyebrow">Permissoes</span>
+            <h2>Escolha o usuario</h2>
+        </div>
+    </div>
+    <form method="get" action="{{ url_for('admin.usuarios') }}#permissoes" class="user-picker" data-restore-scroll>
+        <label>Usuario
+            <select name="usuario_id" onchange="this.form.submit()">
+                <option value="">Escolha o usuario para editar</option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}" {% if selected_usuario and selected_usuario.id == usuario.id %}selected{% endif %}>{{ usuario.nome }} - {{ usuario.email }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </form>
+    {% if selected_usuario %}
+    {% set usuario = selected_usuario %}
+    {% set admin_principal = usuario.email == "admin@inventario.local" %}
+    <form method="post" action="{{ url_for('admin.editar_usuario', usuario_id=usuario.id) }}" class="user-card" data-restore-scroll>
+        <div class="user-card-header">
+            <div>
+                <strong>{{ usuario.nome }}</strong>
+                <span>{{ usuario.email }}</span>
+                {% if admin_principal %}<small class="field-note">Login administrador principal</small>{% endif %}
+            </div>
+            <button class="small secondary" type="submit">Salvar</button>
+        </div>
+        <div class="user-card-grid">
+            <label>Nome <input name="nome" value="{{ usuario.nome }}" required></label>
+            <label>E-mail <input type="email" name="email" value="{{ usuario.email }}" {% if admin_principal %}readonly{% endif %} required></label>
+            <label>Loja
+                <select name="loja_id" {% if admin_principal %}disabled{% endif %}>
+                    <option value="">Escolha a loja</option>
+                    {% for loja in lojas %}
+                    <option value="{{ loja.id }}" {% if usuario.loja_id == loja.id %}selected{% endif %}>{{ loja.codigo }} - {{ loja.nome }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Senha <input type="password" name="senha" placeholder="Nova senha"></label>
+        </div>
+        <div class="user-card-switches">
+            <label class="check"><input type="checkbox" name="ver_todas_lojas" {% if usuario.pode_ver_todas_lojas %}checked{% endif %} {% if admin_principal %}disabled{% endif %}> Ver todas as lojas</label>
+            {% if admin_principal %}<input type="hidden" name="ver_todas_lojas" value="on">{% endif %}
+            <label class="check"><input type="checkbox" name="ativo" {% if usuario.ativo %}checked{% endif %} {% if admin_principal %}disabled{% endif %}> Ativo</label>
+            {% if admin_principal %}<input type="hidden" name="ativo" value="on">{% endif %}
+        </div>
+        <div class="permissions-modules compact">
+            {% for modulo, itens in modulos_permissao.items() %}
+            <div class="permission-module">
+                <strong>{{ modulo }}</strong>
+                <div class="permissions-grid compact">
+                    {% for valor in itens %}
+                    <label class="check">
+                        <input type="checkbox" name="permissoes" value="{{ valor }}" {% if valor in usuario.permissoes_set %}checked{% endif %} {% if admin_principal %}disabled{% endif %}> {{ permissoes[valor] }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if admin_principal %}
+            {% for valor in permissoes.keys() %}
+            <input type="hidden" name="permissoes" value="{{ valor }}">
+            {% endfor %}
+        {% endif %}
+    </form>
+    {% else %}
+    <p class="empty-state">{% if usuarios %}Escolha um usuario para editar as permissoes.{% else %}Nenhum usuario cadastrado.{% endif %}</p>
+    {% endif %}
+</section>
+{% endblock %}
