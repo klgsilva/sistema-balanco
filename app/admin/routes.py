@@ -178,4 +178,4 @@ def editar_usuario(usuario_id):
         usuario.set_password(senha)
     db.session.commit()
     flash("Usuario atualizado.", "success")
-    return redirect(url_for("admin.usuarios", usuario_id=usuario.id) + "#permissoes")
+    return redirect(url_for("admin.usuarios", usuario_id=usuario.id, salvo=usuario.id) + "#permissoes")
