@@ -58,6 +58,28 @@
         });
     });
 
+    document.querySelectorAll("form[data-dirty-form]").forEach((form) => {
+        const submitButton = form.querySelector("[data-dirty-submit]");
+        if (!submitButton) return;
+        const fields = Array.from(form.querySelectorAll("input, select, textarea"))
+            .filter((field) => field.type !== "hidden" && !field.disabled && !field.readOnly);
+        const snapshot = () => fields.map((field) => (
+            field.type === "checkbox" || field.type === "radio" ? field.checked : field.value
+        )).join("|");
+        const initialState = snapshot();
+        const syncDirtyState = () => {
+            submitButton.disabled = snapshot() === initialState;
+        };
+        fields.forEach((field) => {
+            field.addEventListener("input", syncDirtyState);
+            field.addEventListener("change", syncDirtyState);
+        });
+        form.addEventListener("submit", () => {
+            submitButton.disabled = false;
+        });
+        syncDirtyState();
+    });
+
     document.querySelectorAll("[data-filter-location]").forEach((filterLocation) => {
         const form = filterLocation.closest("form");
         const filterCorridor = form ? form.querySelector("[data-filter-corridor]") : null;
