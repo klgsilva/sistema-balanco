@@ -1,4 +1,3 @@
-from decimal import Decimal
 import os
 import sqlite3
 
@@ -164,41 +163,6 @@ def main():
         Usuario.query.filter(Usuario.perfil != "admin", Usuario.loja_id.is_(None)).update({"loja_id": loja_padrao.id})
         ProdutoInventario.query.filter(ProdutoInventario.loja_id.is_(None)).update({"loja_id": loja_padrao.id})
         db.session.commit()
-
-        if ProdutoInventario.query.count() == 0:
-            corredor = Corredor.query.filter_by(nome="Molhos").first()
-            usuario = Usuario.query.filter_by(email="admin@inventario.local").first()
-            produtos = [
-                ProdutoInventario(
-                    codigo_barras="7891000000011",
-                    nome="Molho de tomate tradicional",
-                    local_estoque="store",
-                    loja_id=loja_padrao.id,
-                    corredor_id=corredor.id,
-                    origem="cd",
-                    margem=Decimal("20.00"),
-                    preco_venda=Decimal("4.99"),
-                    preco_custo=Decimal("3.99"),
-                    quantidade=Decimal("24.000"),
-                    tipo_medida="unit",
-                    usuario_id=usuario.id,
-                ),
-                ProdutoInventario(
-                    codigo_barras="7891000000028",
-                    nome="Carne bovina acougue",
-                    local_estoque="warehouse",
-                    loja_id=loja_padrao.id,
-                    origem="third_party",
-                    margem=Decimal("30.00"),
-                    preco_venda=Decimal("39.90"),
-                    preco_custo=Decimal("27.93"),
-                    quantidade=Decimal("12.450"),
-                    tipo_medida="kg",
-                    usuario_id=usuario.id,
-                ),
-            ]
-            db.session.add_all(produtos)
-            db.session.commit()
 
         print("Banco preparado.")
         print("Admin: admin@inventario.local / admin123")
