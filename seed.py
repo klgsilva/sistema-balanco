@@ -3,7 +3,7 @@ import sqlite3
 
 from app import create_app
 from app.extensions import db
-from app.models import Corredor, Loja, PERMISSOES_OPERADOR_PADRAO, PERMISSOES_USUARIO, ProdutoInventario, Usuario
+from app.models import Corredor, Loja, PERMISSOES_USUARIO, ProdutoInventario, Usuario
 
 
 CORREDORES = ["Enlatados", "Molhos", "Frios", "Bebidas", "Limpeza", "Higiene", "Mercearia", "Acougue"]
@@ -132,12 +132,6 @@ def main():
             admin.set_password("admin123")
             db.session.add(admin)
 
-        if not Usuario.query.filter_by(email="operador@inventario.local").first():
-            operador = Usuario(nome="Operador", email="operador@inventario.local", perfil="operador", loja_id=loja_padrao.id)
-            operador.set_permissoes(PERMISSOES_OPERADOR_PADRAO)
-            operador.set_password("operador123")
-            db.session.add(operador)
-
         for nome in CORREDORES:
             if not Corredor.query.filter_by(nome=nome).first():
                 db.session.add(Corredor(nome=nome))
@@ -151,22 +145,12 @@ def main():
             admin_principal.ver_todas_lojas = True
             admin_principal.loja_id = None
             admin_principal.set_permissoes(PERMISSOES_USUARIO)
-        for usuario in Usuario.query.filter(Usuario.perfil != "admin").all():
-            if not usuario.permissoes or usuario.permissoes == "[]":
-                usuario.set_permissoes(PERMISSOES_OPERADOR_PADRAO)
-            permissoes = usuario.permissoes_set
-            if "editar_produto" in permissoes and "excluir_produto" not in permissoes:
-                permissoes.add("excluir_produto")
-                usuario.set_permissoes(permissoes)
-        db.session.commit()
-
         Usuario.query.filter(Usuario.perfil != "admin", Usuario.loja_id.is_(None)).update({"loja_id": loja_padrao.id})
         ProdutoInventario.query.filter(ProdutoInventario.loja_id.is_(None)).update({"loja_id": loja_padrao.id})
         db.session.commit()
 
         print("Banco preparado.")
         print("Admin: admin@inventario.local / admin123")
-        print("Operador: operador@inventario.local / operador123")
 
 
 if __name__ == "__main__":
